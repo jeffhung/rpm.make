@@ -32,6 +32,16 @@
 
 RPM_BUILD_DIR       ?= $(abspath build)
 RPM_DISTS_DIR       ?= $(abspath dists)
+RPM_WORKS_DIR       ?= $(abspath works)
+
+
+# ----------------------------------------------------------------------------
+# Functions
+# ----------------------------------------------------------------------------
+
+rpm_noop      =
+rpm_joinwords = $(subst $(rpm_noop) $(rpm_noop),$(1),$(2))
+rpm_popback   = $(wordlist 1,$(shell expr $(words $(1)) - 1),$(1))
 
 
 # ----------------------------------------------------------------------------
@@ -47,6 +57,7 @@ rpm-help:
 	@echo "";
 	@echo "  rpm-help             - show this help message";
 	@echo "  rpm     PKG_NAME=%   - create the RPM package called %";
+	@echo "  rpm-rip PKG_SRCRPM=% - rip out the spec file from source RPM";
 	@echo "";
 	@echo "For example, use the following command to create the libpng RPM:";
 	@echo "";
@@ -62,6 +73,7 @@ rpm-help:
 .PHONY: rpm-clean
 rpm-clean:
 	rm -rf $(RPM_BUILD_DIR);
+	rm -rf $(RPM_WORKS_DIR);
 
 .PHONY: rpm
 rpm: PKG_NAME       ?= rpm.make
@@ -84,4 +96,16 @@ rpm:
 		-ba $(RPM_BUILD_DIR)/SPECS/$(PKG_NAME)-$(PKG_VERSION).spec;
 	cp -f $(RPM_BUILD_DIR)/RPMS/*/$(PKG_NAME)-$(PKG_VERSION)-*.rpm $(RPM_DISTS_DIR)/;
 	cp -f $(RPM_BUILD_DIR)/SRPMS/$(PKG_NAME)-$(PKG_VERSION)-*.rpm  $(RPM_DISTS_DIR)/;
+
+.PHONY: rpm-rip
+rpm-rip: RPM_SRCRPM  ?= $(error Please specify RPM_SRCRPM variable)
+rpm-rip: RPM_NAME    ?= $(call rpm_joinwords,-,$(call rpm_popback,$(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM))))))
+rpm-rip: RPM_VERSION ?= $(lastword $(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM)))))
+rpm-rip: RPM_RIP_DIR ?= $(RPM_WORKS_DIR)/$(RPM_NAME)-$(RPM_VERSION)
+rpm-rip:
+	@echo "Ripping .spec from $(RPM_SRCRPM)";
+	@echo "     name: $(RPM_NAME)";
+	@echo "  version: $(RPM_VERSION)";
+	mkdir -p $(RPM_RIP_DIR);
+	cd $(RPM_RIP_DIR); rpm2cpio $(abspath $(RPM_SRCRPM)) | cpio -idmv
 
