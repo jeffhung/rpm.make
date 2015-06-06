@@ -44,8 +44,8 @@ rpm-help:
 	@echo "These rpm-* make targets help you automate the process to create RPM packages.";
 	@echo "in local via virtualenv(1) and pip(1) inside it.";
 	@echo "";
-	@echo "  rpm-help       - show this help message";
-	@echo "  rpm PKG=%      - create the RPM package called %";
+	@echo "  rpm-help        - show this help message";
+	@echo "  rpm PKG_NAME=% - create the RPM package called %";
 	@echo "";
 	@echo "For example, use the following command to create the libpng RPM:";
 	@echo "";
