@@ -1,0 +1,41 @@
+%define pkg_name    #PKG_NAME#
+%define pkg_version #PKG_VERSION#
+%define pkg_source  #PKG_SOURCE#
+
+Name:           %{pkg_name}
+Version:        %{pkg_version}
+Release:        0%{?dist}.jh
+Summary:        Makefile module for packaging RPM occasionally.
+
+Group:          Development/Languages
+License:        BSD 2.0
+URL:            https://github.com/jeffhung/rpm.make
+Source0:        %{pkg_source}
+BuildRoot:      %{_tmppath}/%{name}-%{version}-buildroot
+
+BuildArch:      noarch
+BuildRequires:  make
+
+%description
+For those who package RPM occasionally, the rpm.make file is a Makefile
+module built on top of GNU make to simplify package building.
+
+%prep
+%setup -q
+
+%install
+rm -rf %{buildroot}
+make install DESTDIR=%{buildroot} prefix=/usr
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root,-)
+/usr/share/rpm.make
+
+
+%changelog
+* Fri Jun 05 2015 Jeff Hung <jeff.cc.hung@gmail.com>
+- Initial package
+
