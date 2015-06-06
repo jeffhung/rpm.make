@@ -34,6 +34,7 @@ distclean: clean
 package:
 	mkdir -p $(NAME)-$(VERSION);
 	cp -p GNUmakefile rpm.make rpm.make.spec.in \
+	      Vagrantfile bootstrap.sh \
 	   $(NAME)-$(VERSION);
 	tar zcvf $(NAME)-$(VERSION).tar.gz $(NAME)-$(VERSION);
 
