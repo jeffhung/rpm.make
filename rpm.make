@@ -30,7 +30,8 @@
 # Configurations
 # ----------------------------------------------------------------------------
 
-RPM_BUILD_DIR       ?= $(abspath rpm-build)
+RPM_BUILD_DIR       ?= $(abspath build)
+RPM_DISTS_DIR       ?= $(abspath dists)
 
 
 # ----------------------------------------------------------------------------
@@ -81,6 +82,6 @@ rpm:
 	> $(RPM_BUILD_DIR)/SPECS/$(PKG_NAME)-$(PKG_VERSION).spec;
 	rpmbuild --verbose --define="_topdir $(RPM_BUILD_DIR)" \
 		-ba $(RPM_BUILD_DIR)/SPECS/$(PKG_NAME)-$(PKG_VERSION).spec;
-	cp -f $(RPM_BUILD_DIR)/RPMS/*/$(PKG_NAME)-$(PKG_VERSION)-*.rpm ./;
-	cp -f $(RPM_BUILD_DIR)/SRPMS/$(PKG_NAME)-$(PKG_VERSION)-*.rpm  ./;
+	cp -f $(RPM_BUILD_DIR)/RPMS/*/$(PKG_NAME)-$(PKG_VERSION)-*.rpm $(RPM_DISTS_DIR)/;
+	cp -f $(RPM_BUILD_DIR)/SRPMS/$(PKG_NAME)-$(PKG_VERSION)-*.rpm  $(RPM_DISTS_DIR)/;
 
