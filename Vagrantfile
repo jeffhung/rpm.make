@@ -10,7 +10,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.provision "shell",
-    privileged: false,
+    privileged: true,
     inline: <<-SHELL
       yum install -y rpm-build;
     SHELL
