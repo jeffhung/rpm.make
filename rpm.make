@@ -93,6 +93,7 @@ rpm-pack:
 	> $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
 	rpmbuild --verbose --define="_topdir $(RPM_BUILD_DIR)" \
 		-ba $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
+	mkdir -p $(RPM_DISTS_DIR);
 	cp -f $(RPM_BUILD_DIR)/RPMS/*/$(RPM_NAME)-$(RPM_VERSION)-*.rpm $(RPM_DISTS_DIR)/;
 	cp -f $(RPM_BUILD_DIR)/SRPMS/$(RPM_NAME)-$(RPM_VERSION)-*.rpm  $(RPM_DISTS_DIR)/;
 
