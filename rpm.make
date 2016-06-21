@@ -53,11 +53,10 @@ rpm-help:
 	@echo "Usage: make [ TARGET ... ]";
 	@echo "";
 	@echo "These rpm-* make targets help you automate the process to create RPM packages.";
-	@echo "in local via virtualenv(1) and pip(1) inside it.";
 	@echo "";
-	@echo "  rpm-help             - show this help message";
-	@echo "  rpm     PKG_NAME=%   - create the RPM package called %";
-	@echo "  rpm-rip PKG_SRCRPM=% - rip out the spec file from source RPM";
+	@echo "  rpm-help              - show this help message";
+	@echo "  rpm-pack PKG_NAME=%   - create the RPM package called %";
+	@echo "  rpm-spec RPM_SRCRPM=% - rip out the spec file from source RPM";
 	@echo "";
 	@echo "For example, use the following command to create the libpng RPM:";
 	@echo "";
@@ -75,12 +74,12 @@ rpm-clean:
 	rm -rf $(RPM_BUILD_DIR);
 	rm -rf $(RPM_WORKS_DIR);
 
-.PHONY: rpm
-rpm: PKG_NAME       ?= rpm.make
-rpm: PKG_VERSION    ?= 0.1.1000
-rpm: PKG_SOURCE     ?= $(PKG_NAME)-$(PKG_VERSION).tar.gz
-rpm: PKG_SPECFILE   ?= $(PKG_NAME).spec.in
-rpm:
+.PHONY: rpm-pack
+rpm-pack: PKG_NAME       ?= rpm.make
+rpm-pack: PKG_VERSION    ?= 0.1.1000
+rpm-pack: PKG_SOURCE     ?= $(PKG_NAME)-$(PKG_VERSION).tar.gz
+rpm-pack: PKG_SPECFILE   ?= $(PKG_NAME).spec.in
+rpm-pack:
 	@echo "Making RPM $(PKG_NAME) version $(PKG_VERSION)";
 	@echo "      from $(PKG_SOURCE)";
 	@echo "      with $(PKG_SPECFILE)";
@@ -97,15 +96,17 @@ rpm:
 	cp -f $(RPM_BUILD_DIR)/RPMS/*/$(PKG_NAME)-$(PKG_VERSION)-*.rpm $(RPM_DISTS_DIR)/;
 	cp -f $(RPM_BUILD_DIR)/SRPMS/$(PKG_NAME)-$(PKG_VERSION)-*.rpm  $(RPM_DISTS_DIR)/;
 
-.PHONY: rpm-rip
-rpm-rip: RPM_SRCRPM  ?= $(error Please specify RPM_SRCRPM variable)
-rpm-rip: RPM_NAME    ?= $(call rpm_joinwords,-,$(call rpm_popback,$(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM))))))
-rpm-rip: RPM_VERSION ?= $(lastword $(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM)))))
-rpm-rip: RPM_RIP_DIR ?= $(RPM_WORKS_DIR)/$(RPM_NAME)-$(RPM_VERSION)
-rpm-rip:
-	@echo "Ripping .spec from $(RPM_SRCRPM)";
-	@echo "     name: $(RPM_NAME)";
-	@echo "  version: $(RPM_VERSION)";
-	mkdir -p $(RPM_RIP_DIR);
+.PHONY: rpm-spec
+rpm-spec: RPM_SRCRPM  ?= $(error Please specify RPM_SRCRPM variable)
+rpm-spec: RPM_NAME    ?= $(call rpm_joinwords,-,$(call rpm_popback,$(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM))))))
+rpm-spec: RPM_VERSION ?= $(lastword $(call rpm_popback,$(subst -, ,$(notdir $(RPM_SRCRPM)))))
+rpm-spec: RPM_RIP_DIR ?= $(RPM_WORKS_DIR)/$(RPM_NAME)-$(RPM_VERSION)
+rpm-spec:
+	@echo "[rpm.make] Extract .spec from $(RPM_SRCRPM)";
+	@echo "[rpm.make]      name: $(RPM_NAME)";
+	@echo "[rpm.make]   version: $(RPM_VERSION)";
+	rm    -rf $(RPM_RIP_DIR);
+	mkdir -p  $(RPM_RIP_DIR);
 	cd $(RPM_RIP_DIR); rpm2cpio $(abspath $(RPM_SRCRPM)) | cpio -idmv
+	cp $(RPM_RIP_DIR)/*.spec .
 
