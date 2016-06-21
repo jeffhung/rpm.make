@@ -9,8 +9,10 @@ Vagrant.configure(2) do |config|
     config.cache.scope = :box
   end
 
-  config.vm.provision "shell" do |shell|
-    shell.path = "bootstrap.sh"
-  end
+  config.vm.provision "shell",
+    privileged: false,
+    inline: <<-SHELL
+      yum install -y rpm-build;
+    SHELL
 
 end
