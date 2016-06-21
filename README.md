@@ -10,7 +10,7 @@ module built on top of [GNU make][gmake] to simplify package building.
 
 Use the `-f` option to load and use `rpm.make`:
 
-```shell
+```console
 $ make -f rpm.make
 Usage: make [ TARGET ... ]
 
@@ -63,7 +63,7 @@ Show help message of `rpm.make`:
 
 Extract `.spec` file from existing source RPM specified by `RPM_SRCRPM`.
 
-```shell
+```console
 $ make rpm-rip RPM_SRCRPM=cpuid-20140123-1.el6.src.rpm
 [rpm.make] Ripping .spec from cpuid-20140123-1.el6.src.rpm
 [rpm.make]      name: cpuid
