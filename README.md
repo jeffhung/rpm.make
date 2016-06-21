@@ -17,7 +17,7 @@ Usage: make [ TARGET ... ]
 These rpm-* make targets help you automate the process to create RPM packages.
 
   rpm-help              - show this help message
-  rpm-pack PKG_NAME=%   - create the RPM package called %
+  rpm-pack RPM_NAME=%   - create the RPM package called %
   rpm-spec RPM_SRCRPM=% - rip out the spec file from source RPM
   
 For example, use the following command to create the libpng RPM:
