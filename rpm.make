@@ -108,5 +108,5 @@ rpm-spec:
 	rm    -rf $(RPM_RIP_DIR);
 	mkdir -p  $(RPM_RIP_DIR);
 	cd $(RPM_RIP_DIR); rpm2cpio $(abspath $(RPM_SRCRPM)) | cpio -idmv
-	cp $(RPM_RIP_DIR)/*.spec .
+	cp $(RPM_RIP_DIR)/*.spec ./$(RPM_NAME).spec.in
 

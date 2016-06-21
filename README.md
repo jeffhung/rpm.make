@@ -10,7 +10,7 @@ module built on top of [GNU make][gmake] to simplify package building.
 
 Use the `-f` option to load and use `rpm.make`:
 
-```
+```shell
 $ make -f rpm.make
 Usage: make [ TARGET ... ]
 
@@ -34,7 +34,7 @@ Available make variables:
 Or you can write your main makefile like following to merge `rpm.make` make
 targets in:
 
-```
+```make
 .PHONY: all
 all: rpm-help
 
@@ -77,5 +77,7 @@ cpuid.spec
 cp /vagrant/works/cpuid-20140123/*.spec .
 ```
 
-The extracted `.spec` file will be put in current directory.
+The extracted `.spec` file will be renamed to `.spec.in` and be put in current
+directory. So you could modify it and use `rpm-pack` later to package the RPM
+based on the `.spec.in` file enhanced by you.
 
