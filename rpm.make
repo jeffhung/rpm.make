@@ -67,6 +67,7 @@ rpm-help:
 	@echo "  RPM_NAME      - name of the package to build";
 	@echo "  RPM_VERSION   - version of the package to build";
 	@echo "  RPM_SOURCE    - source tar-ball of the package to build";
+	@echo "  RPM_PACKER    - tag to show who packed the RPM";
 	@echo "";
 
 .PHONY: rpm-clean
@@ -78,11 +79,13 @@ rpm-clean:
 rpm-pack: RPM_NAME       ?= rpm.make
 rpm-pack: RPM_VERSION    ?= 0.1.1000
 rpm-pack: RPM_SOURCE     ?= $(RPM_NAME)-$(RPM_VERSION).tar.gz
+rpm-pack: RPM_PACKER     ?= .rpmmake
 rpm-pack: RPM_SPECFILE   ?= $(RPM_NAME).spec.in
 rpm-pack:
 	@echo "Making RPM $(RPM_NAME) version $(RPM_VERSION)";
 	@echo "      from $(RPM_SOURCE)";
 	@echo "      with $(RPM_SPECFILE)";
+	@echo "        by $(RPM_PACKER)";
 	mkdir -p $(RPM_BUILD_DIR)/{RPMS,SOURCES,BUILD,SPECS,SRPMS};
 	cp -f $(RPM_SOURCE) $(RPM_BUILD_DIR)/SOURCES/;
 	# Create SPEC file with changelog, and build RPM files.
@@ -90,6 +93,7 @@ rpm-pack:
 		-e "s/#RPM_NAME#/$(RPM_NAME)/" \
 		-e "s/#RPM_VERSION#/$(RPM_VERSION)/" \
 		-e "s/#RPM_SOURCE#/$(RPM_SOURCE)/" \
+		-e "s/#RPM_PACKER#/$(RPM_PACKER)/" \
 	> $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
 	rpmbuild --verbose --define="_topdir $(RPM_BUILD_DIR)" \
 		-ba $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
