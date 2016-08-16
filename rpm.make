@@ -43,6 +43,13 @@ rpm_noop      =
 rpm_joinwords = $(subst $(rpm_noop) $(rpm_noop),$(1),$(2))
 rpm_popback   = $(wordlist 1,$(shell expr $(words $(1)) - 1),$(1))
 
+rpm_sedsubs   = sed -e "s/\#RPM_NAME\#/$(RPM_NAME)/"
+rpm_sedsubs  +=     -e "s/\#RPM_VERSION\#/$(RPM_VERSION)/"
+rpm_sedsubs  +=     -e "s/\#RPM_PACKER\#/$(RPM_PACKER)/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE0\#/$(patsubst %.in,%,$(RPM_SOURCE0))/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE1\#/$(patsubst %.in,%,$(RPM_SOURCE1))/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE2\#/$(patsubst %.in,%,$(RPM_SOURCE2))/"
+
 
 # ----------------------------------------------------------------------------
 # Make targets of rpm.make
@@ -78,23 +85,32 @@ rpm-clean:
 .PHONY: rpm-pack
 rpm-pack: RPM_NAME       ?= rpm.make
 rpm-pack: RPM_VERSION    ?= 0.1.1000
-rpm-pack: RPM_SOURCE     ?= $(RPM_NAME)-$(RPM_VERSION).tar.gz
-rpm-pack: RPM_PACKER     ?= .rpmmake
 rpm-pack: RPM_SPECFILE   ?= $(RPM_NAME).spec.in
+rpm-pack: RPM_PACKER     ?= .rm
+rpm-pack: RPM_SOURCE0    ?= $(RPM_NAME)-$(RPM_VERSION).tar.gz
+rpm-pack: RPM_SOURCE1    ?= 
+rpm-pack: RPM_SOURCE2    ?= 
 rpm-pack:
+	@echo "$(rpm_sedsubs)";
+	@echo $(filter %.in,$(RPM_SOURCE1));
+	###
 	@echo "Making RPM $(RPM_NAME) version $(RPM_VERSION)";
-	@echo "      from $(RPM_SOURCE)";
 	@echo "      with $(RPM_SPECFILE)";
 	@echo "        by $(RPM_PACKER)";
+	@echo "      from $(RPM_SOURCE0)";
 	mkdir -p $(RPM_BUILD_DIR)/{RPMS,SOURCES,BUILD,SPECS,SRPMS};
-	cp -f $(RPM_SOURCE) $(RPM_BUILD_DIR)/SOURCES/;
-	# Create SPEC file with changelog, and build RPM files.
-	cat $(RPM_NAME).spec.in | sed \
-		-e "s/#RPM_NAME#/$(RPM_NAME)/" \
-		-e "s/#RPM_VERSION#/$(RPM_VERSION)/" \
-		-e "s/#RPM_SOURCE#/$(RPM_SOURCE)/" \
-		-e "s/#RPM_PACKER#/$(RPM_PACKER)/" \
-	> $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
+	# Put the source0 file
+	cp -f $(RPM_SOURCE0) $(RPM_BUILD_DIR)/SOURCES/;
+	# Put source1~9 and substitute values if its name end with .in.
+	$(if $(filter %.in,$(RPM_SOURCE1))\
+	,cat $(RPM_SOURCE1) | $(rpm_sedsubs) > $(patsubst %.in,%,$(RPM_BUILD_DIR)/SOURCES/$(notdir $(RPM_SOURCE1)))\
+	,$(if $(RPM_SOURCE1),cp $(RPM_SOURCE1) $(RPM_BUILD_DIR)/SOURCES/))
+	$(if $(filter %.in,$(RPM_SOURCE2))\
+	,cat $(RPM_SOURCE2) | $(rpm_sedsubs) > $(patsubst %.in,%,$(RPM_BUILD_DIR)/SOURCES/$(notdir $(RPM_SOURCE2)))\
+	,$(if $(RPM_SOURCE2),cp $(RPM_SOURCE2) $(RPM_BUILD_DIR)/SOURCES/))
+	# Create and put the SPEC file.
+	cat $(RPM_SPECFILE) | $(rpm_sedsubs) > $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
+	# Build the RPM files.
 	rpmbuild --verbose --define="_topdir $(RPM_BUILD_DIR)" \
 		-ba $(RPM_BUILD_DIR)/SPECS/$(RPM_NAME)-$(RPM_VERSION).spec;
 	mkdir -p $(RPM_DISTS_DIR);
