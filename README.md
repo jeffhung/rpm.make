@@ -43,6 +43,18 @@ all: rpm-help
 include rpm.make
 ```
 
+## Install
+
+Copy the `rpm.make` file into the top-level folder of your project.
+
+Or download with [curl](http://curl.haxx.se/) directly:
+
+	curl -L -o rpm.make https://bit.ly/rpm-make
+
+Or with [wget](https://www.gnu.org/software/wget/):
+
+	wget --content-disposition https://bit.ly/rpm-make
+
 
 ## Targets
 
