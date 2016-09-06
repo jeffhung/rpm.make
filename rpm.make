@@ -46,9 +46,9 @@ rpm_popback   = $(wordlist 1,$(shell expr $(words $(1)) - 1),$(1))
 rpm_sedsubs   = sed -e "s/\#RPM_NAME\#/$(RPM_NAME)/"
 rpm_sedsubs  +=     -e "s/\#RPM_VERSION\#/$(RPM_VERSION)/"
 rpm_sedsubs  +=     -e "s/\#RPM_PACKER\#/$(RPM_PACKER)/"
-rpm_sedsubs  +=     -e "s/\#RPM_SOURCE0\#/$(patsubst %.in,%,$(RPM_SOURCE0))/"
-rpm_sedsubs  +=     -e "s/\#RPM_SOURCE1\#/$(patsubst %.in,%,$(RPM_SOURCE1))/"
-rpm_sedsubs  +=     -e "s/\#RPM_SOURCE2\#/$(patsubst %.in,%,$(RPM_SOURCE2))/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE0\#/$(patsubst %.in,%,$(notdir $(RPM_SOURCE0)))/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE1\#/$(patsubst %.in,%,$(notdir $(RPM_SOURCE1)))/"
+rpm_sedsubs  +=     -e "s/\#RPM_SOURCE2\#/$(patsubst %.in,%,$(notdir $(RPM_SOURCE2)))/"
 
 
 # ----------------------------------------------------------------------------
